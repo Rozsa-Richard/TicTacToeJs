@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tic-Tac-Toe Bot</title>
+    <link rel="stylesheet" href="Unbeatable.css">
+</head>
+<body>
+    <h1>Unbeatable Tic-Tac-Toe</h1>
+    <div id="board"></div>
+    <button onclick="resetGame()">Restart Game</button>
+    <script>
+        const bot = "X";
+        const opponent = "O";
+        let board = ["", "", "", "", "", "", "", "", ""];
+        const boardElement = document.getElementById("board");
+
+        // Initialize the board
+        function initializeBoard() {
+            boardElement.innerHTML = "";
+            board.forEach((cell, index) => {
+                const cellElement = document.createElement("div");
+                cellElement.classList.add("cell");
+                cellElement.dataset.index = index;
+                cellElement.textContent = cell;
+                cellElement.addEventListener("click", handlePlayerMove);
+                boardElement.appendChild(cellElement);
+            });
+        }
+
+        // Handle player move
+        function handlePlayerMove(event) {
+            const index = event.target.dataset.index;
+            if (board[index] === "") {
+                board[index] = opponent;
+                updateBoard();
+                if (!checkWinner(board, opponent) && !isTie(board)) {
+                    botMove();
+                }
+            }
+        }
+
+        // Bot's move
+        function botMove() {
+            const bestMove = findBestMove(board);
+            board[bestMove] = bot;
+            updateBoard();
+        }
+
+        // Update the board
+        function updateBoard() {
+            const cells = document.querySelectorAll(".cell");
+            board.forEach((cell, index) => {
+                cells[index].textContent = cell;
+                if (cell !== "") {
+                    cells[index].classList.add("taken");
+                }
+            });
+            if (checkWinner(board, opponent)) {
+                alert("You win!");
+                disableBoard();
+            } else if (checkWinner(board, bot)) {
+                alert("Bot wins!");
+                disableBoard();
+            } else if (isTie(board)) {
+                alert("It's a tie!");
+            }
+        }
+
+        // Disable the board
+        function disableBoard() {
+            const cells = document.querySelectorAll(".cell");
+            cells.forEach(cell => cell.classList.add("taken"));
+        }
+
+        // Reset the game
+        function resetGame() {
+            board = ["", "", "", "", "", "", "", "", ""];
+            initializeBoard();
+        }
+
+        // Check for a winner
+        function checkWinner(board, player) {
+            const winPatterns = [
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+                [0, 4, 8], [2, 4, 6],            // Diagonals
+            ];
+            return winPatterns.some(pattern => 
+                pattern.every(index => board[index] === player)
+            );
+        }
+
+        // Check for a tie
+        function isTie(board) {
+            return board.every(cell => cell !== "");
+        }
+
+        // Get available moves
+        function getAvailableMoves(board) {
+            return board.map((cell, index) => (cell === "" ? index : null)).filter(i => i !== null);
+        }
+
+        // Minimax algorithm
+        function minimax(board, isMaximizing) {
+            if (checkWinner(board, bot)) return { score: 1 };
+            if (checkWinner(board, opponent)) return { score: -1 };
+            if (isTie(board)) return { score: 0 };
+
+            const availableMoves = getAvailableMoves(board);
+            const moves = [];
+
+            for (let move of availableMoves) {
+                const newBoard = [...board];
+                newBoard[move] = isMaximizing ? bot : opponent;
+
+                const result = minimax(newBoard, !isMaximizing);
+                moves.push({ move, score: result.score });
+            }
+
+            if (isMaximizing) {
+                return moves.reduce((best, curr) => (curr.score > best.score ? curr : best));
+            } else {
+                return moves.reduce((best, curr) => (curr.score < best.score ? curr : best));
+            }
+        }
+
+        // Find the best move for the bot
+        function findBestMove(board) {
+            return minimax(board, true).move;
+        }
+
+        // Start the game
+        initializeBoard();
+    </script>
+</body>
+</html>
