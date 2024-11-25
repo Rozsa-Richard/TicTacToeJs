@@ -8,7 +8,7 @@ const modeSelection = document.getElementById('mode-selection');
 
 let currentPlayer = 'X';
 let gameActive = true;
-let gameMode = 'twoPlayer'; // Alapértelmezett mód
+let gameMode = 'twoPlayer';
 const boardState = Array(9).fill(null);
 
 function handleCellClick(event) {

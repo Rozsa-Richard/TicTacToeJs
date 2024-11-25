@@ -16,7 +16,6 @@
         let board = ["", "", "", "", "", "", "", "", ""];
         const boardElement = document.getElementById("board");
 
-        // Initialize the board
         function initializeBoard() {
             boardElement.innerHTML = "";
             board.forEach((cell, index) => {
@@ -29,7 +28,6 @@
             });
         }
 
-        // Handle player move
         function handlePlayerMove(event) {
             const index = event.target.dataset.index;
             if (board[index] === "") {
@@ -41,14 +39,12 @@
             }
         }
 
-        // Bot's move
         function botMove() {
             const bestMove = findBestMove(board);
             board[bestMove] = bot;
             updateBoard();
         }
 
-        // Update the board
         function updateBoard() {
             const cells = document.querySelectorAll(".cell");
             board.forEach((cell, index) => {
@@ -68,41 +64,35 @@
             }
         }
 
-        // Disable the board
         function disableBoard() {
             const cells = document.querySelectorAll(".cell");
             cells.forEach(cell => cell.classList.add("taken"));
         }
 
-        // Reset the game
         function resetGame() {
             board = ["", "", "", "", "", "", "", "", ""];
             initializeBoard();
         }
 
-        // Check for a winner
         function checkWinner(board, player) {
             const winPatterns = [
-                [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
-                [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
-                [0, 4, 8], [2, 4, 6],            // Diagonals
+                [0, 1, 2], [3, 4, 5], [6, 7, 8], 
+                [0, 3, 6], [1, 4, 7], [2, 5, 8], 
+                [0, 4, 8], [2, 4, 6],            
             ];
             return winPatterns.some(pattern => 
                 pattern.every(index => board[index] === player)
             );
         }
 
-        // Check for a tie
         function isTie(board) {
             return board.every(cell => cell !== "");
         }
 
-        // Get available moves
         function getAvailableMoves(board) {
             return board.map((cell, index) => (cell === "" ? index : null)).filter(i => i !== null);
         }
 
-        // Minimax algorithm
         function minimax(board, isMaximizing) {
             if (checkWinner(board, bot)) return { score: 1 };
             if (checkWinner(board, opponent)) return { score: -1 };
@@ -125,13 +115,10 @@
                 return moves.reduce((best, curr) => (curr.score < best.score ? curr : best));
             }
         }
-
-        // Find the best move for the bot
         function findBestMove(board) {
             return minimax(board, true).move;
         }
 
-        // Start the game
         initializeBoard();
     </script>
 </body>
